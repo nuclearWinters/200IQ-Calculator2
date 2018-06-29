@@ -31,7 +31,7 @@ Clone or download the repository, then follow the next instrucctions.
 
 If all has gone well you'll see an initial screen like the one below.
   
-## Screenshots (Reminder: Take original screenshot)
+## Screenshot
 
 ![preview](https://i.imgur.com/CAsqXsc.png)
 
