@@ -33,7 +33,7 @@ If all has gone well you'll see an initial screen like the one below.
   
 ## Screenshots (Reminder: Take original screenshot)
 
-![preview](https://i.imgur.com/4lG4HuS.png)
+![preview](https://i.imgur.com/CAsqXsc.png)
 
 ## Limitations
 
