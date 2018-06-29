@@ -35,6 +35,8 @@ If all has gone well you'll see an initial screen like the one below.
 
 ![preview](https://i.imgur.com/CAsqXsc.png)
 
+![preview](https://i.imgur.com/CunSMdF.png)
+
 ## Limitations
 
 - Not recognizing buffs that reduces damage (eg. Annie's E, Warwick's E, Alistar's R, etc.).
