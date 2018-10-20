@@ -18,23 +18,11 @@ class FirstColumn extends Component {
         const brightComp = {alignSelf: "center", height: 35, width: 35, borderRadius: 30}
         const imgChampionsReturns = teamComp.map((champ, index) => {
             const img = imgChampRequire[champ] !== undefined ? imgChampRequire[champ] : requireBlack
-            if (champ == selectedChampion.id) {
-                return(
-                    <View key={index} margin={1}>
-                        <Image style={brightComp} source={img} />
-                        <View style={styles.imgLvAbsolute}>
-                            <Text style={{fontSize: 8}}>{selectedChampion.level}</Text>
-                        </View>
-                    </View>
-                )
-            }
-            else {
-                return(
-                    <View key={index} margin={1}>
-                        <Image style={opacityComp} source={img} />
-                    </View>
-                )
-            }
+            return(
+                <View key={index} margin={1}>
+                    <Image style={opacityComp} source={img} />
+                </View>
+            )
         })
         const runes = [selectedChampion.runes[0], selectedChampion.runesPage[1]]
         const imgRunesReturn = runes.map((rune, index)=>{
@@ -59,10 +47,18 @@ class FirstColumn extends Component {
                 </View>
             )
         })
+        const selectedChampionImg = 
+        <View margin={1}>
+            <Image style={brightComp} source={imgChampRequire[selectedChampion.id] !== undefined ? imgChampRequire[selectedChampion.id] : requireBlack} />
+            <View style={styles.imgLvAbsolute}>
+                <Text style={{fontSize: 8}}>{selectedChampion.level}</Text>
+            </View>
+        </View>
         return(
             <View style={{flex: 1, flexDirection: "row"}}>
                 <View style={styles.imageChamp}>
                     {imgChampionsReturns}
+                    {selectedChampionImg}
                 </View>
                 <View style={styles.columnRune}>
                     {imgRunesReturn}

@@ -61,7 +61,7 @@ const imgObjRequire = {
     "3680": require("../img/Imagenesobjetos/FrostedSnax3680.png"),
     "3681": require("../img/Imagenesobjetos/SuperSpicySnax3681.png"),
     "3682": require("../img/Imagenesobjetos/EspressoSnax3682.png"),
-    "3683": require("../img/Imagenesobjetos/RainbowSnaxPartyPack!3683.png"),
+    "3683": require("../img/Imagenesobjetos/RainbowSnaxPartyPack3683.png"),
     "3200": require("../img/Imagenesobjetos/PrototypeHexCore3200.png"),
     "1018": require("../img/Imagenesobjetos/CloakofAgility1018.png"),
     "3312": require("../img/Imagenesobjetos/TimewornFrostQueen'sClaim3312.png"),
@@ -492,7 +492,8 @@ const imgChampRequire = {
     "83": require("../img/Imagenescampeones/Yorick.png"),
     "84": require("../img/Imagenescampeones/Akali.png"),
     "85": require("../img/Imagenescampeones/Kennen.png"),
-    "86": require("../img/Imagenescampeones/Garen.png")
+    "86": require("../img/Imagenescampeones/Garen.png"),
+    "999": require("../img/Imagenescampeones/EnemyTurret.png")
 }
 
 const imgSpellRequire = {
@@ -510,7 +511,7 @@ const imgSpellRequire = {
     "4": require("../img/Imageneshechizos/Flash4.png"),
     "6": require("../img/Imageneshechizos/Ghost6.png"),
     "7": require("../img/Imageneshechizos/Heal7.png"),
-    "30": require("../img/Imageneshechizos/TotheKing!30.png"),
+    "30": require("../img/Imageneshechizos/TotheKing30.png"),
     "31": require("../img/Imageneshechizos/PoroToss31.png"),
     "21": require("../img/Imageneshechizos/Barrier21.png"),
     "32": require("../img/Imageneshechizos/Mark32.png"),

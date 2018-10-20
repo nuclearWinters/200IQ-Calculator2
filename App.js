@@ -23,6 +23,7 @@ YellowBox.ignoreWarnings(['Warning: isMounted(...)', 'Debugger and device', 'Rem
 
 class MainScreen extends Component {
   state = {
+    region: "",
     messageHidden: "Search user to synchronize desktop app data and Riot ingame API data",
     isHidden: false,
     username: "",
@@ -54,7 +55,10 @@ class MainScreen extends Component {
         MS: 0,
         runes: [false, false, false, false, false, false],
         runesPage: [false, false],
+        buffs: [],
         stats: {
+          armorPen: 0,
+          magicPen: 0,
           BaseMR: 0,
           BaseAD: 0,
           BaseHealth: 0,
@@ -70,7 +74,8 @@ class MainScreen extends Component {
           BaseASP: 0,
           maxCrit: 2,
           lethality: 0,
-          healAndShieldPower: 0
+          healAndShieldPower: 0,
+          onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
         },
         items: [false, false, false, false, false, false]
       },
@@ -95,9 +100,12 @@ class MainScreen extends Component {
         CDR: 0,
         Crit: 0 ,
         MS: 0,
+        buffs: [],
         runes: [false, false, false, false, false, false],
         runesPage: [false, false],
         stats: {
+          armorPen: 0,
+          magicPen: 0,
           BaseMR: 0,
           BaseAD: 0,
           BaseHealth: 0,
@@ -111,7 +119,8 @@ class MainScreen extends Component {
           BaseASP: 0,
           maxCrit: 2,
           lethality: 0,
-          healAndShieldPower: 0
+          healAndShieldPower: 0,
+          onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
         },
         items: [false, false, false, false, false, false]
       }
@@ -152,6 +161,339 @@ class MainScreen extends Component {
   };
 
   updateEffects = () => {
+    if (this.state.champions.enemyChampion.id !== false) {
+      if (this.state.selectableChampions) {
+        const SkillOrder = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [] : this.state.selectableChampions[this.state.champions.enemyChampion.id].SkillOrder
+        const SkillData = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [] : this.state.selectableChampions[this.state.champions.enemyChampion.id].SkillData
+        const SkillPoints = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [0,0,0,0] : SkillPointsUpdate(this.state.champions.enemyChampion.id, this.state.champions.enemyChampion.level, SkillOrder)
+        const spells = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [false, false] : [this.state.selectableChampions[this.state.champions.enemyChampion.id].spell1Id, this.state.selectableChampions[this.state.champions.enemyChampion.id].spell2Id]
+        const runes = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [false, false, false, false, false, false] : this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkIds
+        const runesPage = this.state.selectableChampions[this.state.champions.enemyChampion.id] === undefined ? [false, false] : [this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkStyle, this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkSubStyle]
+        const enemyChampion = Object.assign({}, this.state.champions.enemyChampion, {
+          SkillOrder: SkillOrder,
+          SkillData: SkillData,
+          SkillPoints: SkillPoints,
+          spells: spells,
+          runes: runes,
+          runesPage: runesPage
+        })
+        const champions = Object.assign({}, this.state.champions, {
+          enemyChampion: enemyChampion
+        })
+        this.setState({
+          champions: champions
+        },()=>{
+          let stats = []
+          for (const champ in this.state.champions) {
+            let statObject = {}
+            statObject.BaseMR = 0
+            statObject.BaseAD = 0
+            statObject.BaseHealth = 0
+            statObject.BaseArmor = 0
+            statObject.BaseMana = 0
+            statObject.BaseFlatMS = 0
+            statObject.LS = 0
+            statObject.SpellVamp = 0
+            statObject.MPen = 0
+            statObject.ASP = 0
+            statObject.BaseASP = 0
+            statObject.maxCrit = 2
+            statObject.lethality = 0
+            statObject.armorPen = 1
+            statObject.magicPen = 1
+            statObject.healAndShieldPower = 0
+            const Stats = championData.data[this.state.champions[champ].id].stats
+            const Level = this.state.champions[champ].level
+            statObject.BaseArmor += ((((0.0175*Level)+0.685)*(Level-1))*Stats["armorperlevel"])+Stats["armor"]
+            statObject.BaseHealth += ((((0.0175*Level)+0.685)*(Level-1))*Stats["hpperlevel"])+Stats["hp"]
+            statObject.BaseMR += ((((0.0175*Level)+0.685)*(Level-1))*Stats["spellblockperlevel"])+Stats["spellblock"]
+            statObject.BaseAD += ((((0.0175*Level)+0.685)*(Level-1))*Stats["attackdamageperlevel"])+Stats["attackdamage"]
+            statObject.ASP += ((((0.0175*Level)+0.685)*(Level-1))*(Stats["attackspeedperlevel"]/100))
+            statObject.BaseASP += (0.625/(1+(Stats["attackspeedoffset"])))
+            statObject.BaseMana += ((((0.0175*Level)+0.685)*(Level-1))*Stats["mpperlevel"])+Stats["mp"]
+            statObject.BaseFlatMS += Stats["movespeed"]
+            statObject.onHit = {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
+            //ON Hit Effects
+            // -- -- -- -- -- 
+            //On hit Kayle Passive E
+            let enemy_champ = "enemyChampion" 
+            if (champ === "enemyChampion") {
+              enemy_champ = "allyChampion"
+            }
+            if (this.state.champions[champ].id === 10) {
+              const array = [0, 10 , 15 , 20 , 25 , 30]
+              statObject.onHit.MagicDamage += array[this.state.champions[champ].SkillPoints[2]] + (this.state.champions[champ].AP*.15)
+            }
+            //On hit Teemo Passive E
+            if (this.state.champions[champ].id === 17) {
+              const array = [0, 10 , 20 , 30 , 40 , 50]
+              statObject.onHit.MagicDamage += array[this.state.champions[champ].SkillPoints[2]] + (this.state.champions[champ].AP*.3)
+            }
+            //On hit Warwick Passive
+            if (this.state.champions[champ].id === 19) {
+              const array = [0, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44]
+              statObject.onHit.MagicDamage += array[this.state.champions[champ].level]
+            }
+            //Recurve Bow
+            if (this.state.champions[champ].items.includes(1043)) {
+              statObject.onHit.PhysicalDamage += 15
+            }
+            //Ruined King
+            if (this.state.champions[champ].items.includes(3153)) {
+              statObject.onHit.PhysicalDamage += this.state.champions[enemy_champ].currentHealth*.08
+            }
+            //Bloodrazor
+            if (this.state.champions[champ].items.includes(1419)) {
+              statObject.onHit.PhysicalDamage += this.state.champions[enemy_champ].maxHealth*.04
+            }
+            //Bloodrazor
+            if (this.state.champions[champ].items.includes(3675)) {
+              statObject.onHit.PhysicalDamage += this.state.champions[enemy_champ].maxHealth*.04
+            }
+            //Bloodrazor
+            if (this.state.champions[champ].items.includes(1416)) {
+              statObject.onHit.PhysicalDamage += this.state.champions[enemy_champ].maxHealth*.04
+            }
+            //Guinsoo
+            if (this.state.champions[champ].items.includes(3124)) {
+              statObject.onHit.PhysicalDamage += 5+ ((this.state.champions[champ].AD-this.state.champions[champ].stats.BaseAD)*.1)
+              statObject.onHit.MagicDamage += 5+ (this.state.champions[champ].AP*.1)
+            }
+            //Nashor
+            if (this.state.champions[champ].items.includes(3115)) {
+              statObject.onHit.MagicDamage += 15 + (this.state.champions[champ].AP*.15)
+            }
+            //Hydra
+            if (this.state.champions[champ].items.includes(3748)) {
+              statObject.onHit.PhysicalDamage += 45 + (this.state.champions[champ].maxHealth*.035)
+            }
+            //Wit's End
+            if (this.state.champions[champ].items.includes(3091)) {
+              statObject.onHit.MagicDamage += 42
+            }
+            //Muramana
+            if (this.state.champions[champ].items.includes(3043)) {
+              if (this.state.champions[champ].mana_bar > .2) {
+                statObject.onHit.PhysicalDamage += (this.state.champions[champ].currentMana-(this.state.champions[champ].currentMana*.03)) * .06
+              }
+            }
+            //Ardent Censer
+            if (this.state.champions[champ].buffs.includes("ArdentCenser")) {
+              const array = [0 , 5 , 6 , 7 , 8 , 9 , 9 , 10 , 11 , 12 , 13 , 14 , 15 , 16 , 16 , 17 , 18 , 19 , 20]
+              statObject.onHit.MagicDamage += array[this.state.champions[champ].level]
+            }
+            // -- -- -- -- --
+            //Heal and Shield Power
+            // -- -- -- -- -- 
+            //Censer
+            if (this.state.champions[champ].items.includes(3504)) {
+              statObject.healAndShieldPower += .08
+            }
+            //Salvation
+            if (this.state.champions[champ].items.includes(3382)) {
+              statObject.healAndShieldPower += .08
+            }
+            //Redemption
+            if (this.state.champions[champ].items.includes(3107)) {
+              statObject.healAndShieldPower += .08
+            }
+            //Forbidden Idol
+            if (this.state.champions[champ].items.includes(3114)) {
+              statObject.healAndShieldPower += .05
+            }
+            //Mikael's Crusible
+            if (this.state.champions[champ].items.includes(3222)) {
+              statObject.healAndShieldPower += .15
+            }
+            //Revitalize
+            if (this.state.champions[champ].runes.includes(8453)) {
+              statObject.healAndShieldPower += .05
+            }
+            // -- -- -- -- --
+            //Lethality
+            // -- -- -- -- -- 
+            //Duskblade
+            if (this.state.champions[champ].items.includes(3147)) {
+              statObject.lethality += 18
+            }
+            //Youmuu's 
+            if (this.state.champions[champ].items.includes(3142)) {
+              statObject.lethality += 18
+            }
+            //Edge of Night
+            if (this.state.champions[champ].items.includes(3814)) {
+              statObject.lethality += 18
+            }
+            //Serrated Dirk
+            if (this.state.champions[champ].items.includes(3134)) {
+              statObject.lethality += 10
+            }
+            //Sudden Impact
+            if (this.state.champions[champ].buffs.includes("SuddenImpact")) {
+              statObject.lethality += 10
+              statObject.MPen += 8
+            }
+            // -- -- -- -- --
+            //Magic Penetration
+            // -- -- -- -- -- 
+            //Sorc Shoes
+            if (this.state.champions[champ].items.includes(3020)) {
+              statObject.MPen += 18
+            }
+            //Touch of Death
+            let TouchOfDeath = 0
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3165) {
+                TouchOfDeath = 15
+              }
+              else if (this.state.champions[champ].items[item] === 3916) {
+                TouchOfDeath = 15
+              }
+            }
+            statObject.MPen += TouchOfDeath
+            // -- -- -- -- --
+            //Lifesteal
+            // -- -- -- -- -- 
+            //Bilgewater Cutlass
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3144) {
+                statObject.LS += .1
+              }
+            }
+            //Blade of the ruined king
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3153) {
+                statObject.LS += .12
+              }
+            }
+            //Doran's Blade 
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 1055) {
+                statObject.LS += .03
+              }
+            }
+            //Guardian's Hammer
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3184) {
+                statObject.LS += .1
+              }
+            }
+            //Mercuarial Scimitar 
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3139) {
+                statObject.LS += .1
+              }
+            }
+            //Ravenous Hydra
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3074) {
+                statObject.LS += .12
+              }
+            }
+            //Vampiric Scepter
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 1053) {
+                statObject.LS += .1
+              }
+            }
+            //The Bloodthirster
+            if (this.state.champions[champ].items.includes(3072)) {
+              statObject.LS += .2
+            }
+            //Maw of Malmortius
+            if (this.state.champions[champ].buffs.includes("MawOfMalmortius")) {
+              statObject.LS += .1
+            }
+            //Lee Sin W
+            if (this.state.champions[champ].buffs.includes("IronWill")) {
+              const array = [0 , .1 , .15 , .2 , .25 , .3]
+              statObject.LS += array[this.state.champions[champ].SkillPoints[1]]
+            }
+            //Nasus Passive
+            if (this.state.champions[champ].id === 75) {
+              const array = [0 , .12 , .12 , .12 , .12 , .12 , .12 , .18 , .18 , .18 , .18 , .18 , .18 , .24 , .24 , .24 , .24 , .24 , .24]
+              statObject.LS += array[this.state.champions[champ].level]
+            }
+            //Olaf W
+            if (this.state.champions[champ].buffs.includes("ViciousStrikes")) {
+              const array = [0 , .14 , .16 , .18 , .20 , .22]
+              statObject.LS += array[this.state.champions[champ].SkillPoints[1]]
+            }
+            // -- -- -- -- -- 
+            //Armor Penetration
+            // -- -- -- -- -- 
+            //Last Whisper
+            let lastWhisper = 0
+            for (const item in this.state.champions[champ].items) {
+              if (this.state.champions[champ].items[item] === 3035) {
+                if (lastWhisper < .1) {
+                  lastWhisper = .1
+                }
+              }
+              else if (this.state.champions[champ].items[item] === 3033) {
+                if (lastWhisper < .25) {
+                  lastWhisper = .25
+                }
+              }
+              else if (this.state.champions[champ].items[item] === 3036) {
+                if (lastWhisper < .35) {
+                  lastWhisper = .35
+                }
+              }
+            }
+            statObject.armorPen *= (1-lastWhisper)
+            //Darius E
+            if (this.state.champions[champ].id === 122) {
+              const array = [0 , .1 , .15 , .2 , .25 , .3]
+              statObject.armorPen *= (1-array[this.state.champions[champ].SkillPoints[2]])
+            }
+            // -- -- -- -- -- 
+            //Magic Penetration
+            // -- -- -- -- -- 
+            //Void Staff
+            if (this.state.champions[champ].items.includes(3135)) {
+              statObject.magicPen *= (1-.4)
+            }
+            // -- -- -- -- -- 
+            //Max Crit
+            // -- -- -- -- -- 
+            //Randuin
+            if (this.state.champions[enemy_champ].items.includes(3143)) {
+              statObject.maxCrit *= (.8)
+            }
+            stats.push(statObject)
+          }
+          const allyChampion = Object.assign({}, this.state.champions.allyChampion, {
+            stats: stats[0]
+          })
+          const enemyChampion = Object.assign({}, this.state.champions.enemyChampion, {
+            stats: stats[1]
+          })
+          const champions = Object.assign({}, this.state.champions, {
+            allyChampion: allyChampion,
+            enemyChampion: enemyChampion
+          })
+          this.setState({
+            champions: champions
+          }, () => {
+            const data = abilityUpdate(this.state.champions)
+            /*for (const ability in data[0][1]) {
+              for (const eff in data[0][1][ability]) {
+                console.log(data[0][1][ability][eff])
+              }
+            }*/
+            this.setState({
+              data: data
+            },()=>{
+
+            })
+          })
+        })
+      }
+    }
+  }
+
+  /*updateEffects = () => {
     if (this.state.selectableChampions) {
       if (this.state.selectableChampions[this.state.champions.enemyChampion.id] !== undefined) {
         if (this.state.enemies.includes(this.state.champions.enemyChampion.id)) {
@@ -246,7 +588,7 @@ class MainScreen extends Component {
         }
       }
     }
-  }
+  }*/
 
   writeUsername = (e) => {
     this.setState({
@@ -376,7 +718,6 @@ class MainScreen extends Component {
   }
 
   onDrop = (ord, enemy) => {
-    console.log(ord, enemy)
     enemyObj = Object.assign({}, this.state.selectableChampions[enemy], {
       SkillOrder: ord
     })
@@ -389,8 +730,6 @@ class MainScreen extends Component {
     const champions = Object.assign({}, this.state.champions, {
       enemyChampion: enemyChampion
     })
-    console.log(champions)
-    console.log(selectableChampions)
     this.setState({
       selectableChampions: selectableChampions,
       champions: champions
@@ -414,12 +753,35 @@ class MainScreen extends Component {
       }
       else {
         const userUID = firebase_user.uid
-        db.ref().child("users").child(userUID).child("inGame").on("value", snap => {this.onFirebaseSnap(snap.val())})
+        db.ref().child("users").child(userUID).child("inGame").once("value", snap => {this.onFirebaseSnap(snap.val())})
         db.ref().child("users").child(userUID).child("username").once("value", snap => {
           this.props.navigation.setParams({username: snap.val()})
         })
+        this.wsConnection(firebase_user)
       }
     }) 
+  }
+
+  wsConnection = (firebase_user) => {
+    var ws = new WebSocket("ws://localhost:8080");
+    ws.onopen = event => {
+      ws.send(JSON.stringify({
+        "type": 'auth',
+        "payload": String(firebase_user.uid)
+      }))
+    }
+    ws.onmessage = event => {
+        console.log(event.data) 
+    }
+    ws.onclose = event => {
+      setTimeout(() => {
+        this.wsReconnection(firebase_user)
+      }, 3000)
+    }
+  }
+
+  wsReconnection = (firebase_user) => {
+    this.wsConnection(firebase_user)
   }
 
   render() {
@@ -430,7 +792,7 @@ class MainScreen extends Component {
             <FirstColumn teamComp = {this.state.allies} selectedChampion = {this.state.champions.allyChampion}/>
           </View>
           <View style={{ flex: .14, borderColor: "black", borderWidth: 1}}>
-            <SecondColumn stats={this.state.champions.allyChampion} enemyStats={this.state.champions.enemyChampion} side={"Ally"}/>
+            <SecondColumn stats={this.state.champions.allyChampion} enemyStats={this.state.champions.enemyChampion} side={"Ally"} changeAbilityHelpText={this.changeAbilityHelpText.bind(this)}/>
           </View>
           <View style={{ flex: .45, borderColor: "black", borderWidth: 1}}>
             <ThirdColumn data = {this.state.data[0]} stats = {this.state.champions.allyChampion} enemyStats = {this.state.champions.enemyChampion} changeAbilityHelpText = {this.changeAbilityHelpText.bind(this)} />
@@ -445,7 +807,7 @@ class MainScreen extends Component {
             <FirstColumn teamComp = {this.state.enemies} selectedChampion = {this.state.champions.enemyChampion} side={"Enemy"}/>
           </View>
           <View style={{ flex: .14, borderColor: "black", borderWidth: 1}}>
-            <SecondColumn stats={this.state.champions.enemyChampion} enemyStats={this.state.champions.allyChampion} side={"Enemy"}/>
+            <SecondColumn stats={this.state.champions.enemyChampion} enemyStats={this.state.champions.allyChampion} side={"Enemy"} changeAbilityHelpText={this.changeAbilityHelpText.bind(this)}/>
           </View>
           <View style={{ flex: .45, borderColor: "black", borderWidth: 1}}>
             <ThirdColumn data = {this.state.data[1]} stats = {this.state.champions.enemyChampion} enemyStats = {this.state.champions.allyChampion} changeAbilityHelpText = {this.changeAbilityHelpText.bind(this)} />

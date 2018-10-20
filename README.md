@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 200IQ Calculator<a href="https://rnfirebase.io"><img align="left" src="http://i.imgur.com/01XQL0x.png"></a>
 
 
@@ -46,3 +47,7 @@ If all has gone well you'll see an initial screen like the one below.
 - Calculations not using the following stats: Heal and Shield Power, Lethality, Armor Penetration, Lifesteal and Magic Penetration.
 - Only tested on Android.
 - No registration form yet.
+=======
+# 200IQ-Calculator
+Mobile app cappable of display League of Legends ingame data, send by the desktop app with the same name, in a simple way. Done with React Native and Firebase.
+>>>>>>> b6810552bbd0ce846ad15c8123b3f18a1fe1b70e

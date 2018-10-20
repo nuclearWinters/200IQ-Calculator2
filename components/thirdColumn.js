@@ -84,7 +84,32 @@ class ThirdColumn extends Component {
             )
         })
 
-        const DPS = Math.round(((stats.AD * stats.ASP) / enemyStats.maxHealth)*100*(100/(100+stats.Armor)))
+        let damageReduction = 1
+        //Ninja Tabi
+        if (enemyStats.items.includes(3047)) {
+            damageReduction *=.88
+        }
+        let trueDamage = 1
+        let critTrueDamage = 1
+        if (stats.buffs.includes("Conqueror")) {
+            trueDamage *= (.8)
+            critTrueDamage *= (.8)
+        }
+        if (stats.items.includes(3031)){
+            critTrueDamage *= (.85)
+        }
+        const ThisChampion_lethality = stats.stats.lethality*(0.6+(0.4*stats.level)/18)
+        const ThisChampion_percentArmorPen = stats.stats.armorPen
+        const EnemyChampion_physicalDamageReduction = 100/(100+((enemyStats.Armor*ThisChampion_percentArmorPen)-ThisChampion_lethality))
+        const ThisChampion_percentMagicPen = stats.stats.magicPen
+        const EnemyChampion_magicDamageReduction = 100/(100+((enemyStats.MR*ThisChampion_percentMagicPen)-stats.stats.MPen))
+
+        const DPSOnHitMagic = stats.ASP*stats.stats.onHit.MagicDamage*EnemyChampion_magicDamageReduction*(1+(1-trueDamage))
+        const DPSOnHitPhysical = stats.ASP*stats.stats.onHit.PhysicalDamage*EnemyChampion_physicalDamageReduction*(1+(1-trueDamage))
+        const DPSOnHitTrue = stats.ASP*stats.stats.onHit.TrueDamage
+        const DPSAA = (stats.ASP*stats.AD*(1-stats.Crit)*EnemyChampion_physicalDamageReduction*damageReduction*(1+(1-trueDamage)))+(stats.ASP*stats.AD*stats.Crit*stats.stats.maxCrit*EnemyChampion_physicalDamageReduction*damageReduction*(1+(1-critTrueDamage)))
+        const DPS = enemyStats.maxHealth === 0 ? 0 : Math.round((((DPSAA+DPSOnHitMagic+DPSOnHitPhysical+DPSOnHitTrue))/enemyStats.maxHealth)*100)
+        const DPSRaw = enemyStats.maxHealth === 0 ? 0 : Math.round(((DPSAA+DPSOnHitMagic+DPSOnHitPhysical+DPSOnHitTrue)))
 
         return(
             <View style={styles.abilityBackground}>
@@ -95,12 +120,14 @@ class ThirdColumn extends Component {
                             {passiveEffects}
                         </View>
                     </View>
-                    <View style={{flex: .3}}>
-                        <View style={{flex: .5, alignItems: "center", justifyContent: "center"}}><Text style={{textAlign: "center"}}>DPS</Text></View>
-                        <View style={{flex: .5, alignItems: "center", justifyContent: "center"}}>
-                            <Text style={{textAlign: "center"}}>{DPS}%</Text>
+                    <TouchableHighlight underlayColor={"rgba(0,0,0,0.2)"} style={{flex:.3, width: "100%", justifyContent: "center", alignItems: "center", borderRadius: 3}} onPress={() => this.props.changeAbilityHelpText("Damage Per Second (DPS)", "on-hit per second: " + Math.round(DPSRaw))}>
+                        <View>
+                            <View style={{flex: .5, alignItems: "center", justifyContent: "center"}}><Text style={{textAlign: "center"}}>DPS</Text></View>
+                            <View style={{flex: .5, alignItems: "center", justifyContent: "center"}}>
+                                <Text style={{textAlign: "center"}}>{DPS}%</Text>
+                            </View>
                         </View>
-                    </View>
+                    </TouchableHighlight>
                 </View>
                 <View style={{flex: 1}}>
                     <View style={{flex: .1}}><Text style={{textAlign: "center"}}>Q</Text></View>

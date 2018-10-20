@@ -5181,6 +5181,43 @@ export default {
             },
             "key": "Ornn",
             "id": 516
+        },
+        "999": {
+            "stats": {
+                "armorperlevel": 0,
+                "attackdamage": 0,
+                "mpperlevel": 0,
+                "attackspeedoffset": 0,
+                "mp": 0,
+                "armor": 0,
+                "hp": 0,
+                "hpregenperlevel": 0,
+                "attackspeedperlevel": 0,
+                "attackrange": 0,
+                "movespeed": 0,
+                "attackdamageperlevel": 0,
+                "mpregenperlevel": 0,
+                "critperlevel": 0,
+                "spellblockperlevel": 0,
+                "crit": 0,
+                "mpregen": 0,
+                "spellblock": 0,
+                "hpregen": 0,
+                "hpperlevel": 0
+            },
+            "name": "EnemyTurret",
+            "title": "The Enemy Turret",
+            "image": {
+                "full": "Ornn.png",
+                "group": "champion",
+                "sprite": "champion2.png",
+                "h": 48,
+                "w": 48,
+                "y": 96,
+                "x": 144
+            },
+            "key": "EnemyTurret",
+            "id": 999
         }
     }
 }
