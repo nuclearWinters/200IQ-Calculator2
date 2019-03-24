@@ -26,7 +26,6 @@ const Karma = (list_effects_all_abilities, abilityData, PointsQ, PointsW, Points
                     const Max = Bases[PointsQ] + (Scaling[PointsQ]*ThisChampion_AP) + BasesRankR[PointsR] + (ScalingRankR[PointsR]*ThisChampion_AP)
                     const Tag = "MANTRA - SOULFLARE: Inner Flame detonates upon hitting an enemy or reaching maximum range, dealing bonus magic damage in an increased area and leaving an area around it for 1.5 seconds."
                     const Obj = {Max: Max, Type: Type, Tag: Tag}
-                    console.log(Obj)
                     list_effect_per_ability.push(Obj)
                 }
                 if (i === 3) {
@@ -36,7 +35,6 @@ const Karma = (list_effects_all_abilities, abilityData, PointsQ, PointsW, Points
                     const Max = Bases[PointsR] + (Scaling[PointsR]*ThisChampion_AP)
                     const Tag = "MANTRA - SOULFLARE: At the end of its duration, the area explodes, dealing magic damage to all enemies inside."
                     const Obj = {Max: Max, Type: Type, Tag: Tag}
-                    console.log(Obj)
                     list_effect_per_ability.push(Obj)
                 }
             }
@@ -101,7 +99,6 @@ const Karma = (list_effects_all_abilities, abilityData, PointsQ, PointsW, Points
                     const Max = Bases[PointsE] + (Scaling[PointsE]*ThisChampion_AP) + BasesRankR[PointsR] + (ScalingRankR[PointsR]*ThisChampion_AP)
                     const Tag = " MANTRA - DEFIANCE: Inspire overflows with energy, increasing the target's shield."
                     const Obj = {Max: Max, Type: Type, Tag: Tag}
-                    console.log(Obj)
                     list_effect_per_ability.push(Obj)
                 }
                 //Tercer efecto
@@ -112,7 +109,6 @@ const Karma = (list_effects_all_abilities, abilityData, PointsQ, PointsW, Points
                     const Max = Bases[PointsR] + (Scaling[PointsR]*ThisChampion_AP)
                     const Tag = "MANTRA - DEFIANCE: Shielding all nearby allied champions for 30% of the total amount."
                     const Obj = {Max: Max, Type: Type, Tag: Tag}
-                    console.log(Obj)
                     list_effect_per_ability.push(Obj)
                 }
             }

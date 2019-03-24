@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Platform, Image, Text, View, ScrollView, YellowBox, Button, TextInput, TouchableHighlight } from 'react-native';
-import firebase from 'react-native-firebase';
+import { Text, View, YellowBox, Button, TextInput, TouchableHighlight } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
 import LoginScreen from "./components/LoginScreen"
 import { auth, db } from "./components/firebaseData"
@@ -22,107 +21,110 @@ import InfoAbility from "./components/infoAbility"
 YellowBox.ignoreWarnings(['Warning: isMounted(...)', 'Debugger and device', 'Remote debugger'])
 
 class MainScreen extends Component {
-  state = {
-    region: "",
-    messageHidden: "Search user to synchronize desktop app data and Riot ingame API data",
-    isHidden: false,
-    username: "",
-    selectableChampions: false,
-    allies: [null, null, null, null, null],
-    enemies: [null, null, null, null, null],
-    data: [[[],[[],[],[],[]],[]],[[],[[],[],[],[]],[]]],
-    champions: {
-      allyChampion: {
-        id: false,
-        level: false,
-        spells: [false, false],
-        SkillOrder: [],
-        SkillPoints: [0,0,0,0],
-        SkillData: [],
-        currentHealth: 0,
-        maxHealth: 0,
-        currentMana: 0,
-        maxMana: 0,
-        mana_bar: 0,
-        health_bar: 1,
-        AP: 0,
-        AD: 0,
-        MR: 0,
-        Armor: 0,
-        ASP: 0,
-        CDR: 0,
-        Crit: 0 ,
-        MS: 0,
-        runes: [false, false, false, false, false, false],
-        runesPage: [false, false],
-        buffs: [],
-        stats: {
-          armorPen: 0,
-          magicPen: 0,
-          BaseMR: 0,
-          BaseAD: 0,
-          BaseHealth: 0,
-          BaseArmor: 0,
-          BaseMana: 0,
-          BaseManaRegen: 0,
-          BaseFlatMS: 0,
-          LS: 0,
-          SpellVamp: 0,
-          MPen: 0,
-          TouchUnique: 0,
+  constructor(props) {
+    super(props);
+    this.state = {
+      region: "",
+      messageHidden: "Search user to synchronize desktop app data and Riot ingame API data",
+      isHidden: false,
+      username: "",
+      selectableChampions: false,
+      allies: [null, null, null, null, null],
+      enemies: [null, null, null, null, null],
+      data: [[[],[[],[],[],[]],[]],[[],[[],[],[],[]],[]]],
+      champions: {
+        allyChampion: {
+          id: false,
+          level: false,
+          spells: [false, false],
+          SkillOrder: [],
+          SkillPoints: [0,0,0,0],
+          SkillData: [],
+          currentHealth: 0,
+          maxHealth: 0,
+          currentMana: 0,
+          maxMana: 0,
+          mana_bar: 0,
+          health_bar: 1,
+          AP: 0,
+          AD: 0,
+          MR: 0,
+          Armor: 0,
           ASP: 0,
-          BaseASP: 0,
-          maxCrit: 2,
-          lethality: 0,
-          healAndShieldPower: 0,
-          onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
+          CDR: 0,
+          Crit: 0 ,
+          MS: 0,
+          runes: [false, false, false, false, false, false],
+          runesPage: [false, false],
+          buffs: [],
+          stats: {
+            armorPen: 0,
+            magicPen: 0,
+            BaseMR: 0,
+            BaseAD: 0,
+            BaseHealth: 0,
+            BaseArmor: 0,
+            BaseMana: 0,
+            BaseManaRegen: 0,
+            BaseFlatMS: 0,
+            LS: 0,
+            SpellVamp: 0,
+            MPen: 0,
+            TouchUnique: 0,
+            ASP: 0,
+            BaseASP: 0,
+            maxCrit: 2,
+            lethality: 0,
+            healAndShieldPower: 0,
+            onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
+          },
+          items: [false, false, false, false, false, false]
         },
-        items: [false, false, false, false, false, false]
-      },
-      enemyChampion: {
-        id: false,
-        level: false,
-        spells: [false, false],
-        SkillOrder: [],
-        SkillPoints: [0,0,0,0],
-        SkillData: [],
-        currentHealth: 0,
-        maxHealth: 0,
-        currentMana: 0,
-        maxMana: 0,
-        mana_bar: 0,
-        health_bar: 1,
-        AP: 0,
-        AD: 0,
-        MR: 0,
-        Armor: 0,
-        ASP: 0,
-        CDR: 0,
-        Crit: 0 ,
-        MS: 0,
-        buffs: [],
-        runes: [false, false, false, false, false, false],
-        runesPage: [false, false],
-        stats: {
-          armorPen: 0,
-          magicPen: 0,
-          BaseMR: 0,
-          BaseAD: 0,
-          BaseHealth: 0,
-          BaseArmor: 0,
-          BaseMana: 0,
-          BaseFlatMS: 0,
-          LS: 0,
-          SpellVamp: 0,
-          MPen: 0,
+        enemyChampion: {
+          id: false,
+          level: false,
+          spells: [false, false],
+          SkillOrder: [],
+          SkillPoints: [0,0,0,0],
+          SkillData: [],
+          currentHealth: 0,
+          maxHealth: 0,
+          currentMana: 0,
+          maxMana: 0,
+          mana_bar: 0,
+          health_bar: 1,
+          AP: 0,
+          AD: 0,
+          MR: 0,
+          Armor: 0,
           ASP: 0,
-          BaseASP: 0,
-          maxCrit: 2,
-          lethality: 0,
-          healAndShieldPower: 0,
-          onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
-        },
-        items: [false, false, false, false, false, false]
+          CDR: 0,
+          Crit: 0 ,
+          MS: 0,
+          buffs: [],
+          runes: [false, false, false, false, false, false],
+          runesPage: [false, false],
+          stats: {
+            armorPen: 0,
+            magicPen: 0,
+            BaseMR: 0,
+            BaseAD: 0,
+            BaseHealth: 0,
+            BaseArmor: 0,
+            BaseMana: 0,
+            BaseFlatMS: 0,
+            LS: 0,
+            SpellVamp: 0,
+            MPen: 0,
+            ASP: 0,
+            BaseASP: 0,
+            maxCrit: 2,
+            lethality: 0,
+            healAndShieldPower: 0,
+            onHit: {MagicDamage: 0, PhysicalDamage: 0, TrueDamage: 0}
+          },
+          items: [false, false, false, false, false, false]
+        }
       }
     }
   }
@@ -156,9 +158,9 @@ class MainScreen extends Component {
             width={200}
           />
         </View>
-      ),
-    };
-  };
+      )
+    }
+  }
 
   updateEffects = () => {
     if (this.state.champions.enemyChampion.id !== false) {
@@ -493,103 +495,6 @@ class MainScreen extends Component {
     }
   }
 
-  /*updateEffects = () => {
-    if (this.state.selectableChampions) {
-      if (this.state.selectableChampions[this.state.champions.enemyChampion.id] !== undefined) {
-        if (this.state.enemies.includes(this.state.champions.enemyChampion.id)) {
-          const SkillPoints = SkillPointsUpdate(this.state.champions.enemyChampion.id, this.state.champions.enemyChampion.level, this.state.selectableChampions[this.state.champions.enemyChampion.id].SkillOrder)
-          console.log(SkillPoints)
-          const enemyChampion = Object.assign({}, this.state.champions.enemyChampion, {
-            SkillOrder: this.state.selectableChampions[this.state.champions.enemyChampion.id].SkillOrder,
-            SkillData: this.state.selectableChampions[this.state.champions.enemyChampion.id].SkillData,
-            SkillPoints: SkillPoints,
-            spells: [this.state.selectableChampions[this.state.champions.enemyChampion.id].spell1Id, this.state.selectableChampions[this.state.champions.enemyChampion.id].spell2Id],
-            runes: this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkIds,
-            runesPage: [this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkStyle, this.state.selectableChampions[this.state.champions.enemyChampion.id].perks.perkSubStyle]
-          })
-          const champions = Object.assign({}, this.state.champions, {
-            enemyChampion: enemyChampion
-          })
-          this.setState({
-            champions: champions
-          },()=>{
-            let stats = []
-            for (const champ in this.state.champions) {
-              let statObject = {}
-              statObject.BaseMR = 0
-              statObject.BaseAD = 0
-              statObject.BaseHealth = 0
-              statObject.BaseArmor = 0
-              statObject.BaseMana = 0
-              statObject.BaseFlatMS = 0
-              statObject.LS = 0
-              statObject.SpellVamp = 0
-              statObject.MPen = 0
-              statObject.ASP = 0
-              statObject.BaseASP = 0
-              statObject.maxCrit = 2
-              statObject.lethality = 0
-              statObject.healAndShieldPower = 0
-              const Stats = championData.data[this.state.champions[champ].id].stats
-              const Level = this.state.champions[champ].level
-              statObject.BaseArmor += ((((0.0175*Level)+0.685)*(Level-1))*Stats["armorperlevel"])+Stats["armor"]
-              statObject.BaseHealth += ((((0.0175*Level)+0.685)*(Level-1))*Stats["hpperlevel"])+Stats["hp"]
-              statObject.BaseMR += ((((0.0175*Level)+0.685)*(Level-1))*Stats["spellblockperlevel"])+Stats["spellblock"]
-              statObject.BaseAD += ((((0.0175*Level)+0.685)*(Level-1))*Stats["attackdamageperlevel"])+Stats["attackdamage"]
-              statObject.ASP += ((((0.0175*Level)+0.685)*(Level-1))*(Stats["attackspeedperlevel"]/100))
-              statObject.BaseASP += (0.625/(1+(Stats["attackspeedoffset"])))
-              statObject.BaseMana += ((((0.0175*Level)+0.685)*(Level-1))*Stats["mpperlevel"])+Stats["mp"]
-              statObject.BaseFlatMS += Stats["movespeed"]
-              stats.push(statObject)
-            }
-            const allyChampion = Object.assign({}, this.state.champions.allyChampion, {
-              stats: stats[0]
-            })
-            const enemyChampion = Object.assign({}, this.state.champions.enemyChampion, {
-              stats: stats[1]
-            })
-            const champions = Object.assign({}, this.state.champions, {
-              allyChampion: allyChampion,
-              enemyChampion: enemyChampion
-            })
-            this.setState({
-              champions: champions
-            }, () => {
-              const data = abilityUpdate(this.state.champions)
-              this.setState({
-                data: data
-              },()=>{
-                console.log(this.state)
-              })
-            })
-          })
-        }
-        else {
-          const data = Object.assign({}, this.state.data, {
-            "1": [[],[[],[],[],[]],[]] 
-          })
-          const enemyChampion = Object.assign({}, this.state.champions.enemyChampion, {
-            SkillOrder: [],
-            SkillData: [],
-            spells: [false,false],
-            items: [false,false,false,false,false,false],
-            runes: [false,false,false,false,false,false],
-            runesPage: [false,false]
-          })
-          const champions = Object.assign({}, this.state.champions, {
-            enemyChampion: enemyChampion
-          })
-          this.setState({
-            data: data,
-            champions: champions
-          },()=>{
-            console.log(this.state)
-          })
-        }
-      }
-    }
-  }*/
-
   writeUsername = (e) => {
     this.setState({
       username: e
@@ -598,7 +503,7 @@ class MainScreen extends Component {
     })
   }
 
-  onFirebaseSnap = (data) => {
+  onWebSocketSnap = (data) => {
     const allyChampion = Object.assign({}, this.state.champions.allyChampion, { 
       items: [
         data.mine.items[0],
@@ -745,6 +650,34 @@ class MainScreen extends Component {
     })
   }
 
+  wsConnection = (firebase_user) => {
+    var ws = new WebSocket('ws://192.168.0.5:8080')
+    ws.onopen = event => {
+      ws.send(JSON.stringify({
+        "type": 'auth',
+        "payload": String(firebase_user)
+      }))
+    }
+    ws.onmessage = event => {
+      const data = JSON.parse(event.data)
+      //console.log(event.data)
+      this.onWebSocketSnap(data)
+    }
+    ws.onclose = event => {
+      setTimeout(() => {
+        this.wsReconnection(1)
+      }, 3000)
+    }
+    ws.onerror = (e) => {
+      console.log(e.message)
+    }
+  }
+
+  wsReconnection = (firebase_user) => {
+    this.wsConnection(firebase_user)
+    console.log("Reconexion ahora")
+  }
+
   componentWillMount() {
     this.props.navigation.setParams({ writeUsername: this.writeUsername, username: this.state.username, searchUserInGame: this.searchUserInGame});
     auth.onAuthStateChanged(firebase_user => {
@@ -753,35 +686,12 @@ class MainScreen extends Component {
       }
       else {
         const userUID = firebase_user.uid
-        db.ref().child("users").child(userUID).child("inGame").once("value", snap => {this.onFirebaseSnap(snap.val())})
         db.ref().child("users").child(userUID).child("username").once("value", snap => {
           this.props.navigation.setParams({username: snap.val()})
         })
-        this.wsConnection(firebase_user)
+        this.wsConnection(1)
       }
     }) 
-  }
-
-  wsConnection = (firebase_user) => {
-    var ws = new WebSocket("ws://localhost:8080");
-    ws.onopen = event => {
-      ws.send(JSON.stringify({
-        "type": 'auth',
-        "payload": String(firebase_user.uid)
-      }))
-    }
-    ws.onmessage = event => {
-        console.log(event.data) 
-    }
-    ws.onclose = event => {
-      setTimeout(() => {
-        this.wsReconnection(firebase_user)
-      }, 3000)
-    }
-  }
-
-  wsReconnection = (firebase_user) => {
-    this.wsConnection(firebase_user)
   }
 
   render() {
